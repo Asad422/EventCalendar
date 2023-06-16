@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Flutter Demo',
-      
+      debugShowCheckedModeBanner: false,
       home: SplashScreen()
     );
   }
@@ -180,7 +180,21 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ListView(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(child: 
+             StreamBuilder(
+                    stream: Stream.periodic(const Duration(seconds: 1)),
+                    builder: (context, snapshot) {
+                      return Text(
+                        
+                        DateFormat('MM/dd/yyyy hh:mm:ss').format(DateTime.now()),
+                        style: TextStyle(color: Colors.black,fontSize: 25),);
+                    },
+                  ),),
+          ),
           TableCalendar(
+            headerVisible: false,
             headerStyle: HeaderStyle(
               titleTextFormatter: (date, locale) => ''
             ),
@@ -192,7 +206,6 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             locale: 'ru_RU',
             eventLoader: _getEventsForTheDay,
-            calendarFormat: CalendarFormat.month,
             onFormatChanged: (format) {
               setState(() {
                 _calendarFormat = format;
@@ -200,6 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
             },
            focusedDay: _focusedDay,
             firstDay: _firstDay,
+            calendarFormat: _calendarFormat,
             lastDay: _lastDay,
             onPageChanged: (focusedDay) {
               setState(() {
@@ -417,51 +431,36 @@ class _AdminState extends State<Admin> {
       appBar: AppBar(
         backgroundColor: Color.fromRGBO(30,0,179,1),
         title: const Text('Админ-панель'),
-        actions: [
-          IconButton(onPressed: (){
-            
-              showDialog<String>(
-                
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Text('Введите пароль'),
-          
-          actions: <Widget>[
-            TextField(
-              controller: password_controller,
-              decoration: InputDecoration(
-                hintText: "Пароль"
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                if(password_controller.value.text == '8742174'){
-                  Get.to(()=>());
-                }
-              },
-              child: const Text('Ок'),
-            ),
-          ],
-        ),
-           );
-          }, icon: Icon(Icons.admin_panel_settings))
-        ],
+        
       ),
       body: ListView(
         children: [
-          TableCalendar(
-            headerStyle: HeaderStyle(
-              titleTextFormatter: (date, locale) => ''
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: StreamBuilder(
+                  stream: Stream.periodic(const Duration(seconds: 1)),
+                  builder: (context, snapshot) {
+                    return Text(
+                      
+                      DateFormat('MM/dd/yyyy hh:mm:ss').format(DateTime.now()),
+                      style: TextStyle(color: Colors.black,fontSize: 25),);
+                  },
+                ),
             ),
+          ),
+          TableCalendar(
+        headerVisible: false,
+             calendarFormat: _calendarFormat,
             startingDayOfWeek: StartingDayOfWeek.monday,
             availableCalendarFormats: {
               CalendarFormat.month : 'Месяц',
               CalendarFormat.twoWeeks :'Две недели',
               CalendarFormat.week : 'Неделя'
             },
+          
             locale: 'ru_RU',
             eventLoader: _getEventsForTheDay,
-            calendarFormat: CalendarFormat.month,
             onFormatChanged: (format) {
               setState(() {
                 _calendarFormat = format;
@@ -506,9 +505,12 @@ class _AdminState extends State<Admin> {
                 );
               },
             ),
-          ), ..._getEventsForTheDay(_selectedDay).map(
-            (event) => 
+          ), ..._getEventsForTheDay(_selectedDay).map
+          (
             
+        
+            (event ) => 
+          
             Slidable(
                endActionPane:  ActionPane(
                 motion: ScrollMotion(),
@@ -523,7 +525,7 @@ class _AdminState extends State<Admin> {
                     icon: Icons.delete,
                     label: 'Удалить',
                   )]),
-              child: 
+              child: event.id != null ? 
             ListTile(
               title: Text(
                 event.title,
@@ -531,11 +533,11 @@ class _AdminState extends State<Admin> {
               subtitle: Text(
                  DateFormat('dd-MM-yyyy').format(event.date) +  " " + event.time
               ),
-            ),
+            ): Text('Нет событий')
           ))
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+       floatingActionButton: FloatingActionButton(
         backgroundColor:  Color.fromRGBO(30,0,179,1),
         onPressed: () async {
           final result = await Navigator.push<bool>(
@@ -554,7 +556,6 @@ class _AdminState extends State<Admin> {
         },
         child: const Icon(Icons.add),
       ),
-      
     );
   }
 }
