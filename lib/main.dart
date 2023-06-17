@@ -7,25 +7,20 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
+import 'package:native_notify/native_notify.dart';
 import 'package:project/splash_screen.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp();
-}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  final fcmToken = await FirebaseMessaging.instance.getToken();
-  print(fcmToken);
+ 
   await initializeDateFormatting('ru',null);
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    WidgetsFlutterBinding.ensureInitialized();
+     NativeNotify.initialize(3068, 'CU6FgIDICOw6xEmXiGxptd');
    runApp(const MyApp());
 }
 
@@ -193,10 +188,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),),
           ),
-          TableCalendar(
-            headerVisible: false,
+        
+           TableCalendar(
             headerStyle: HeaderStyle(
-              titleTextFormatter: (date, locale) => ''
+              titleCentered: true,
+              titleTextFormatter: (date, locale) => DateFormat.yMMMd(locale).format(date),
+            
+             
             ),
             startingDayOfWeek: StartingDayOfWeek.monday,
             availableCalendarFormats: {
@@ -204,14 +202,15 @@ class _MyHomePageState extends State<MyHomePage> {
               CalendarFormat.twoWeeks :'Две недели',
               CalendarFormat.week : 'Неделя'
             },
-            locale: 'ru_RU',
-            eventLoader: _getEventsForTheDay,
             onFormatChanged: (format) {
               setState(() {
                 _calendarFormat = format;
               });
             },
-           focusedDay: _focusedDay,
+            eventLoader: _getEventsForTheDay,
+          shouldFillViewport: false,
+          locale: 'ru_RU',
+         focusedDay: _focusedDay,
             firstDay: _firstDay,
             calendarFormat: _calendarFormat,
             lastDay: _lastDay,
@@ -221,20 +220,16 @@ class _MyHomePageState extends State<MyHomePage> {
               });
               _loadFirestoreEvents();
             },
-            selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+             selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
             onDaySelected: (selectedDay, focusedDay) {
              
               setState(() {
                 _selectedDay = selectedDay;
                 _focusedDay = focusedDay;
                
-              });
-             
-
+              });},
               
-
-            },
-            calendarStyle: const CalendarStyle(
+              calendarStyle: const CalendarStyle(
               weekendTextStyle: TextStyle(
                 color: Colors.red,
               ),
@@ -243,15 +238,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Colors.red,
               ),
             ),
-            calendarBuilders: CalendarBuilders(
-              headerTitleBuilder: (context, day) {
-                return Container(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(day.toString()),
-                );
-              },
-            ),
-          ), ..._getEventsForTheDay(_selectedDay).map(
+            
+            
+        ),
+         ..._getEventsForTheDay(_selectedDay).map(
             (event) => ListTile(
               title: Text(
                 event.title,
@@ -262,7 +252,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           )
         ],
-      ),
+      )
       
       
     );
@@ -450,24 +440,29 @@ class _AdminState extends State<Admin> {
             ),
           ),
           TableCalendar(
-        headerVisible: false,
-             calendarFormat: _calendarFormat,
+            headerStyle: HeaderStyle(
+              titleCentered: true,
+              titleTextFormatter: (date, locale) => DateFormat.yMMMd(locale).format(date),
+            
+             
+            ),
             startingDayOfWeek: StartingDayOfWeek.monday,
             availableCalendarFormats: {
               CalendarFormat.month : 'Месяц',
               CalendarFormat.twoWeeks :'Две недели',
               CalendarFormat.week : 'Неделя'
             },
-          
-            locale: 'ru_RU',
-            eventLoader: _getEventsForTheDay,
             onFormatChanged: (format) {
               setState(() {
                 _calendarFormat = format;
               });
             },
-           focusedDay: _focusedDay,
+            eventLoader: _getEventsForTheDay,
+          shouldFillViewport: false,
+          locale: 'ru_RU',
+         focusedDay: _focusedDay,
             firstDay: _firstDay,
+            calendarFormat: _calendarFormat,
             lastDay: _lastDay,
             onPageChanged: (focusedDay) {
               setState(() {
@@ -475,20 +470,16 @@ class _AdminState extends State<Admin> {
               });
               _loadFirestoreEvents();
             },
-            selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+             selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
             onDaySelected: (selectedDay, focusedDay) {
              
               setState(() {
                 _selectedDay = selectedDay;
                 _focusedDay = focusedDay;
                
-              });
-             
-
+              });},
               
-
-            },
-            calendarStyle: const CalendarStyle(
+              calendarStyle: const CalendarStyle(
               weekendTextStyle: TextStyle(
                 color: Colors.red,
               ),
@@ -497,15 +488,9 @@ class _AdminState extends State<Admin> {
                 color: Colors.red,
               ),
             ),
-            calendarBuilders: CalendarBuilders(
-              headerTitleBuilder: (context, day) {
-                return Container(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(day.toString()),
-                );
-              },
-            ),
-          ), ..._getEventsForTheDay(_selectedDay).map
+            
+            
+        ), ..._getEventsForTheDay(_selectedDay).map
           (
             
         
